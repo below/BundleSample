@@ -41,7 +41,7 @@ struct ContentView: View {
                 }
                 do {
                     try FileManager.default.copyItem(
-                        atPath: url.path(),
+                        atPath: url.path,
                         toPath: documentDirURL.path)
                 }
                 catch let error {
@@ -89,7 +89,16 @@ struct ContentView: View {
             in: .userDomainMask).first else {
             return nil
         }
-        documentDirURL.append(component: "Sample.quizlist")
+        let filename = "Sample.quizlist"
+        if #available(iOS 16.0, *) {
+            documentDirURL.append(component: filename)
+        } else {
+            let path = documentDirURL.absoluteString as NSString
+            if let newURL = URL(string: path.appendingPathComponent(filename)) {
+                documentDirURL = newURL
+            }
+        }
+
         return documentDirURL
     }
     
@@ -102,7 +111,7 @@ struct ContentView: View {
             NSLog ("Unable to find image")
             return
         }
-        guard let bundleImage = UIImage(contentsOfFile: imageURL.path()) else {
+        guard let bundleImage = UIImage(contentsOfFile: imageURL.path) else {
             NSLog("Unable to create image")
             return
         }
